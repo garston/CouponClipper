@@ -13,27 +13,30 @@ GT.addAll = function(dontAsk){
     var offers = document.getElementsByClassName('lt-offer');
 
     var _addOffer = function(){
-        var currentOfferString = _toString(_currentOffer());
-        if(_currentOffer().getAttribute('class').indexOf('lt-clipped') === -1){
-            console.log('ADDING -', currentOfferString);
-            Ext.fly(_currentOffer()).down('.lt-add-offer-link').dom.click();
+        var currentOffer = Ext.get(offers[i]);
+        currentOffer.dom.scrollIntoView();
+
+        if(currentOffer.down('.lt-offer-not-added')){
+            console.log('ADDING -', _currentOfferString());
+            currentOffer.down('.lt-add-offer-gallery').dom.click();
         }else{
-            console.log('ALREADY ADDED -', currentOfferString);
+            console.log('ALREADY ADDED -', _currentOfferString());
         }
 
         setTimeout(_checkIfCare, GT.delay || 200);
     }
 
     var _checkIfCare = function(){
-        var title = Ext.get(_currentOffer()).down('.lt-details-link').dom.innerHTML.trim().toLowerCase();
-        var description = Ext.get(_currentOffer()).down('.lt-description').dom.innerHTML.trim().toLowerCase();
+        var currentOffer = Ext.get(offers[i]);
+        var title = currentOffer.down('.lt-coupon-ccpd-title').dom.innerHTML.trim().toLowerCase();
+        var description = currentOffer.down('.lt-description').dom.innerHTML.trim().toLowerCase();
         if(_containsStringContainedIn(GT.words.doCare, title) || _containsStringContainedIn(GT.words.doCare, description)){
             console.log('Care');
-            GT.doCare.push(_toString(_currentOffer()));
+            GT.doCare.push(_currentOfferString());
             _nextOffer();
         }else if(dontAsk || _containsStringContainedIn(GT.words.dontCare, title) || _containsStringContainedIn(GT.words.dontCare, description)){
             console.log("Don't care");
-            GT.dontCare.push(_toString(_currentOffer()));
+            GT.dontCare.push(_currentOfferString());
             _nextOffer();
         }else{
             setTimeout(_checkIfCare, 1000);
@@ -48,10 +51,6 @@ GT.addAll = function(dontAsk){
             }
         }
         return false;
-    }
-
-    var _currentOffer = function(){
-        return offers[i];
     }
 
     var _nextOffer = function(){
@@ -70,14 +69,14 @@ GT.addAll = function(dontAsk){
         }
     }
 
-    var _toString = function(offer){
+    var _currentOfferString = function () {
         var str = '';
         Ext.Array.each([
-            '.lt-expiration', '.lt-frequency', '.lt-details-link', '.lt-description',
-            '.lt-coupon-value', '.lt-competitor-title', '.lt-competitor-value', // Personalized specific
+            '.lt-expires-date', '.lt-coupon-ccpd-title', '.lt-description',
+            '.lt-coupon-title', '.lt-coupon-title-price', '.lt-competitor-name', // Personalized specific
             '.lt-savings-value' // Coupon Center specific
         ], function(selector, index, selectors){
-            var node = Ext.fly(offer) && Ext.fly(offer).down(selector);
+            var node = Ext.fly(offers[i]) && Ext.fly(offers[i]).down(selector);
             if(node){
                 str += node.dom.innerHTML.trim() + (index === selectors.length - 1 ? '' : ' -+- ');
             }
@@ -98,6 +97,6 @@ GT.printArray = function(a, oneLinePerItem){
     var str = '';
     Ext.Array.each(a.sort(), function(item){
         str += '"' + item + '", ' + (oneLinePerItem ? '\n' : '');
-    })
+    });
     console.log(str.trim());
 };
