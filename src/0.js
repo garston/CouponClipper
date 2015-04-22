@@ -9,16 +9,16 @@ GT.addAll = function(dontAsk){
     GT.doCare = [];
     GT.dontCare = [];
 
-    var i = 0;
     var offers = document.getElementsByClassName('lt-offer');
+    var i = 0;
+    var currentOfferEl = Ext.get(offers[i]);
 
     var _addOffer = function(){
-        var currentOffer = Ext.get(offers[i]);
-        currentOffer.dom.scrollIntoView();
+        currentOfferEl.dom.scrollIntoView();
 
-        if(currentOffer.down('.lt-offer-not-added')){
+        if(currentOfferEl.down('.lt-offer-not-added')){
             console.log('ADDING -', _currentOfferString());
-            currentOffer.down('.lt-add-offer-gallery').dom.click();
+            currentOfferEl.down('.lt-add-offer-gallery').dom.click();
         }else{
             console.log('ALREADY ADDED -', _currentOfferString());
         }
@@ -27,9 +27,8 @@ GT.addAll = function(dontAsk){
     }
 
     var _checkIfCare = function(){
-        var currentOffer = Ext.get(offers[i]);
-        var title = currentOffer.down('.lt-coupon-ccpd-title').dom.innerHTML.trim().toLowerCase();
-        var description = currentOffer.down('.lt-description').dom.innerHTML.trim().toLowerCase();
+        var title = currentOfferEl.down('.lt-coupon-ccpd-title').dom.innerHTML.trim().toLowerCase();
+        var description = currentOfferEl.down('.lt-description').dom.innerHTML.trim().toLowerCase();
         if(_containsStringContainedIn(GT.words.doCare, title) || _containsStringContainedIn(GT.words.doCare, description)){
             console.log('Care');
             GT.doCare.push(_currentOfferString());
@@ -63,6 +62,7 @@ GT.addAll = function(dontAsk){
         i++;
 
         if(i < offers.length){
+            currentOfferEl = Ext.get(offers[i]);
             _addOffer();
         }else{
             _onExit();
@@ -70,19 +70,15 @@ GT.addAll = function(dontAsk){
     }
 
     var _currentOfferString = function () {
-        var str = '';
-        Ext.Array.each([
+        return [
             '.lt-expires-date', '.lt-coupon-ccpd-title', '.lt-description',
             '.lt-coupon-title', '.lt-coupon-title-price', '.lt-competitor-name', // Personalized specific
             '.lt-savings-value' // Coupon Center specific
-        ], function(selector, index, selectors){
-            var node = Ext.fly(offers[i]) && Ext.fly(offers[i]).down(selector);
-            if(node){
-                str += node.dom.innerHTML.trim() + (index === selectors.length - 1 ? '' : ' -+- ');
-            }
-        });
-
-        return str;
+        ].reduce(function(strings, selector){
+            var subEl = currentOfferEl.down(selector);
+            var text = subEl && subEl.dom.innerHTML.trim();
+            return text ? strings.concat([text]) : strings;
+        }, []).join(' -+- ');
     }
 
     var _onExit = function(){
