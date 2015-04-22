@@ -6,6 +6,20 @@ GT = {
 };
 
 GT.addAll = function(dontAsk){
+    var SELECTORS = {
+        COUPON_CENTER: {
+            SAVINGS_VALUE: '.lt-savings-value'
+        },
+        DESCRIPTION: '.lt-description',
+        EXPIRES_DATE: '.lt-expires-date',
+        PERSONALIZED: {
+            COMPETITOR_NAME: '.lt-competitor-name',
+            COUPON_TITLE: '.lt-coupon-title',
+            COUPON_TITLE_PRICE: '.lt-coupon-title-price'
+        },
+        TITLE: '.lt-coupon-ccpd-title'
+    };
+
     GT.doCare = [];
     GT.dontCare = [];
 
@@ -27,13 +41,11 @@ GT.addAll = function(dontAsk){
     }
 
     var _checkIfCare = function(){
-        var title = currentOfferEl.down('.lt-coupon-ccpd-title').dom.innerHTML.trim().toLowerCase();
-        var description = currentOfferEl.down('.lt-description').dom.innerHTML.trim().toLowerCase();
-        if(_containsStringContainedIn(GT.words.doCare, title) || _containsStringContainedIn(GT.words.doCare, description)){
+        if(_titleOrDescriptionMatch(GT.words.doCare)){
             console.log('Care');
             GT.doCare.push(_currentOfferString());
             _nextOffer();
-        }else if(dontAsk || _containsStringContainedIn(GT.words.dontCare, title) || _containsStringContainedIn(GT.words.dontCare, description)){
+        }else if(dontAsk || _titleOrDescriptionMatch(GT.words.dontCare)){
             console.log("Don't care");
             GT.dontCare.push(_currentOfferString());
             _nextOffer();
@@ -42,14 +54,16 @@ GT.addAll = function(dontAsk){
         }
     }
 
-    var _containsStringContainedIn = function(a, str){
-        for(var i = 0; i < a.length; i++){
-            if(str.indexOf(a[i]) !== -1){
-                console.log(a[i]);
-                return true;
-            }
-        }
-        return false;
+    var _titleOrDescriptionMatch = function(wordsArray){
+        return Ext.Array.some([SELECTORS.TITLE, SELECTORS.DESCRIPTION], function(selector) {
+            var str = currentOfferEl.down(selector).dom.innerHTML.trim().toLowerCase();
+            return Ext.Array.some(wordsArray, function(word){
+                if(str.indexOf(word) !== -1) {
+                    console.log(word);
+                    return true;
+                }
+            });
+        });
     }
 
     var _nextOffer = function(){
@@ -71,9 +85,9 @@ GT.addAll = function(dontAsk){
 
     var _currentOfferString = function () {
         return [
-            '.lt-expires-date', '.lt-coupon-ccpd-title', '.lt-description',
-            '.lt-coupon-title', '.lt-coupon-title-price', '.lt-competitor-name', // Personalized specific
-            '.lt-savings-value' // Coupon Center specific
+            SELECTORS.EXPIRES_DATE, SELECTORS.TITLE, SELECTORS.DESCRIPTION,
+            SELECTORS.PERSONALIZED.COUPON_TITLE, SELECTORS.PERSONALIZED.COUPON_TITLE_PRICE, SELECTORS.PERSONALIZED.COMPETITOR_NAME,
+            SELECTORS.COUPON_CENTER.SAVINGS_VALUE
         ].reduce(function(strings, selector){
             var subEl = currentOfferEl.down(selector);
             var text = subEl && subEl.dom.innerHTML.trim();
