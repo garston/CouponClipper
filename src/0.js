@@ -90,7 +90,7 @@ GT.addAll = function(dontAsk){
             SELECTORS.COUPON_CENTER.SAVINGS_VALUE
         ].reduce(function(strings, selector){
             var subEl = currentOfferEl.down(selector);
-            var text = subEl && subEl.dom.innerHTML.trim();
+            var text = subEl && subEl.dom.textContent.trim();
             return text ? strings.concat([text]) : strings;
         }, []).join(' -+- ');
     }
