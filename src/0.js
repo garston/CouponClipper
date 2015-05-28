@@ -31,39 +31,40 @@ GT.addAll = function(dontAsk){
         currentOfferEl.dom.scrollIntoView();
 
         if(currentOfferEl.down('.lt-offer-not-added')){
-            console.log('ADDING -', _currentOfferString());
             currentOfferEl.down('.lt-add-offer-gallery').dom.click();
-        }else{
-            console.log('ALREADY ADDED -', _currentOfferString());
         }
 
         setTimeout(_checkIfCare, GT.delay || 200);
     }
 
     var _checkIfCare = function(){
-        if(_titleOrDescriptionMatch(GT.words.doCare)){
-            console.log('Care');
-            GT.doCare.push(_currentOfferString());
+        if(_titleOrDescriptionMatch(GT.words.doCare, 'lightblue', GT.doCare) || _titleOrDescriptionMatch(GT.words.dontCare, 'pink', GT.dontCare) || dontAsk) {
             _nextOffer();
-        }else if(dontAsk || _titleOrDescriptionMatch(GT.words.dontCare)){
-            console.log("Don't care");
-            GT.dontCare.push(_currentOfferString());
-            _nextOffer();
-        }else{
+        } else {
             setTimeout(_checkIfCare, 1000);
         }
     }
 
-    var _titleOrDescriptionMatch = function(wordsArray){
-        return Ext.Array.some([SELECTORS.TITLE, SELECTORS.DESCRIPTION], function(selector) {
-            var str = currentOfferEl.down(selector).dom.innerHTML.trim().toLowerCase();
-            return Ext.Array.some(wordsArray, function(word){
-                if(str.indexOf(word) !== -1) {
-                    console.log(word);
-                    return true;
-                }
-            });
-        });
+    var _lookForWord = function(subElSelector, wordsArray, bgColor, offerArray){
+        var subEl = currentOfferEl.down(subElSelector).dom;
+        var trimmedLoweredTextContent = subEl.textContent.trim().toLowerCase();
+        var foundWords = wordsArray.filter(function(word){ return trimmedLoweredTextContent.indexOf(word) !== -1; });
+
+        if(foundWords.length) {
+            currentOfferEl.setStyle('background-color', bgColor);
+            subEl.innerHTML = foundWords.reduce(function(textContent, foundWord){
+                return textContent.replace(new RegExp('(' + foundWord + ')', 'ig'), '<i>$1</i>')
+            }, subEl.textContent);
+            offerArray.push(_currentOfferString());
+        }
+
+        return !!foundWords.length;
+    };
+
+    var _titleOrDescriptionMatch = function(wordsArray, bgColor, offerArray){
+        return [SELECTORS.TITLE, SELECTORS.DESCRIPTION].reduce(function(foundWord, selector) {
+            return foundWord || _lookForWord(selector, wordsArray, bgColor, offerArray);
+        }, false);
     }
 
     var _nextOffer = function(){
