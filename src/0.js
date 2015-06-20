@@ -1,11 +1,12 @@
 GT = {
+    dontAsk: true,
     words: {
         doCare: [],
         dontCare: []
     }
 };
 
-GT.addAll = function(dontAsk){
+GT.addAll = function(){
     var SELECTORS = {
         COUPON_CENTER: {
             SAVINGS_VALUE: '.lt-savings-value'
@@ -38,7 +39,7 @@ GT.addAll = function(dontAsk){
     }
 
     var _checkIfCare = function(){
-        if(_titleOrDescriptionMatch(GT.words.doCare, 'lightblue', GT.doCare) || _titleOrDescriptionMatch(GT.words.dontCare, 'pink', GT.dontCare) || dontAsk) {
+        if(_titleOrDescriptionMatch(GT.words.doCare, 'lightblue', GT.doCare) || _titleOrDescriptionMatch(GT.words.dontCare, 'pink', GT.dontCare) || GT.dontAsk) {
             _nextOffer();
         } else {
             setTimeout(_checkIfCare, 1000);
@@ -111,3 +112,5 @@ GT.printArray = function(a, oneLinePerItem){
     });
     console.log(str.trim());
 };
+
+GT.addAll();
