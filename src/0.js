@@ -1,4 +1,4 @@
-GT = {
+window.GT = window.GT || {
     dontAsk: true,
     words: {
         doCare: [],
@@ -6,7 +6,7 @@ GT = {
     }
 };
 
-GT.addAll = function(){
+window.GT.addAll = function(){
     var SELECTORS = {
         COUPON_CENTER: {
             SAVINGS_VALUE: '.lt-savings-value'
@@ -105,7 +105,7 @@ GT.addAll = function(){
     _addOffer();
 };
 
-GT.printArray = function(a, oneLinePerItem){
+window.GT.printArray = function(a, oneLinePerItem){
     var str = '';
     Ext.Array.each(a.sort(), function(item){
         str += '"' + item + '", ' + (oneLinePerItem ? '\n' : '');
@@ -113,4 +113,4 @@ GT.printArray = function(a, oneLinePerItem){
     console.log(str.trim());
 };
 
-GT.addAll();
+window.GT.addAll();
