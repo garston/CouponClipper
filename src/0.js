@@ -3,13 +3,13 @@ window.GT = window.GT || {};
 (function(){
     var offers = document.getElementsByClassName('lt-offer');
     var i = 0;
-    var currentOfferEl = Ext.get(offers[i]);
 
     var _addOffer = function(){
-        currentOfferEl.dom.scrollIntoView();
+        var offer = offers[i];
+        offer.scrollIntoView();
 
-        if(currentOfferEl.down('.lt-offer-not-added')){
-            currentOfferEl.down('.lt-add-offer-gallery').dom.click();
+        if(offer.getElementsByClassName('lt-offer-not-added').length){
+            offer.getElementsByClassName('lt-add-offer-gallery')[0].click();
         }
 
         setTimeout(_nextOffer, GT.delay || 200);
@@ -24,7 +24,6 @@ window.GT = window.GT || {};
         i++;
 
         if(i < offers.length){
-            currentOfferEl = Ext.get(offers[i]);
             _addOffer();
         }
     };
